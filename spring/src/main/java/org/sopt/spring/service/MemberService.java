@@ -2,7 +2,9 @@ package org.sopt.spring.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.sopt.spring.common.dto.ErrorMessage;
 import org.sopt.spring.domain.Member;
+import org.sopt.spring.exception.NotFoundException;
 import org.sopt.spring.repository.MemberRepository;
 import org.sopt.spring.service.dto.MemberCreateDto;
 import org.sopt.spring.service.dto.MemberFindDto;
@@ -24,6 +26,11 @@ public class MemberService {
         return member.getId().toString();
     }
 
+    public Member findById(Long memberId) {
+        return memberRepository.findById(memberId).orElseThrow(
+                () -> new NotFoundException(ErrorMessage.MEMBER_NOT_FOUND)
+        );
+    }
     public MemberFindDto findMemberById(Long memberId) {
         return MemberFindDto.of(memberRepository.findById(memberId).orElseThrow(
                 () -> new EntityNotFoundException("ID에 해당하는 사용자가 존재하지 않습니다.")
