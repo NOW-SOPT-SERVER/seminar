@@ -31,6 +31,18 @@ dependencies {
 	implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.3'
 	testImplementation 'io.rest-assured:rest-assured'
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+	//JWT
+	implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
+	implementation group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'
+	implementation group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5'
+
+	//Multipart file
+	implementation("software.amazon.awssdk:bom:2.21.0")
+	implementation("software.amazon.awssdk:s3:2.21.0")
+
+	//Security
+	implementation 'org.springframework.boot:spring-boot-starter-security'
 }
 
 tasks.named('test') {

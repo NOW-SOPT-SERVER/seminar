@@ -3,11 +3,14 @@ package org.sopt.spring.service;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.sopt.spring.common.dto.ErrorMessage;
+import org.sopt.spring.common.jwt.JwtTokenProvider;
+import org.sopt.spring.auth.UserAuthentication;
 import org.sopt.spring.domain.Member;
 import org.sopt.spring.exception.NotFoundException;
 import org.sopt.spring.repository.MemberRepository;
 import org.sopt.spring.service.dto.MemberCreateDto;
 import org.sopt.spring.service.dto.MemberFindDto;
+import org.sopt.spring.service.dto.UserJoinResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,15 +19,22 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
-    public String createMember(
-            MemberCreateDto memberCreateDto
+    public UserJoinResponse createMember(
+            MemberCreateDto memberCreate
     ) {
-        Member member = Member.create(memberCreateDto.name(), memberCreateDto.part(), memberCreateDto.age());
-        memberRepository.save(member);
-        return member.getId().toString();
+        Member member = memberRepository.save(
+                Member.create(memberCreate.name(), memberCreate.part(), memberCreate.age())
+        );
+        Long memberId = member.getId();
+        String accessToken = jwtTokenProvider.issueAccessToken(
+                UserAuthentication.createUserAuthentication(memberId)
+        );
+        return UserJoinResponse.of(accessToken, memberId.toString());
     }
+
 
     public Member findById(Long memberId) {
         return memberRepository.findById(memberId).orElseThrow(
